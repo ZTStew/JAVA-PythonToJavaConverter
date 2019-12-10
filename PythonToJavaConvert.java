@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.io.FileWriter;
 import java.util.Scanner;
 
+import java.util.HashMap;
+
 /* Date Imports */
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,16 +21,19 @@ import java.util.Date;
 public class PythonToJavaConvert {
     private String fileName = null;
     private String location = null;
+    /* 'tabCounter' tracks the spacing of each line in order to define scope */
     private int tabCounter = 2;
     private int spacing = 4;
+
+    private HashMap<String, Variable> variableMap = new HashMap<String, Variable>();
 
     /*
      * Constructor: when 'PythonToJavaConvert' is instanciated, a file
      * with the same name as the given file will automaticly be created so that
      * it can be writen to as each line is compiled
      */
-    public PythonToJavaConvert(String fileName, String folder, boolean generate){
-
+    public PythonToJavaConvert(String fileName, String folder, int spacing, boolean generate){
+        this.spacing = spacing;
         /* 
          * assigns 'this.fileName' to the return of 'removeExtention' which removes
          * the extention attached to 'fileName' so that saving the file is easier.
@@ -72,6 +77,7 @@ public class PythonToJavaConvert {
             System.out.println("ERROR: " + e);
         }
     } // PythonToJavaConvert (Constructor)
+
 
     /*
      * Method: 'generateFileStart'
@@ -178,6 +184,55 @@ public class PythonToJavaConvert {
         returnString[1] = comment;
         return returnString;
     } // lineComment
+
+    /*
+     * Method: 'multiLine'
+     * Arguments: 
+     * String text - text being read for the """ command.
+     * 
+     * Description: Reads 'text' for Python muli-line comment notation: '"""' then,
+     * adds the comment to 'comment' which is then formated for Java comment notation.
+     */
+    public Object[] multiLine(String text, boolean multiline){
+        Object[] returnStatus = new Object[2];
+
+        int doubleQuote = 0;
+        
+        String line = "";
+        boolean commentConfirmed = false;
+
+        int c = 0;
+        for(; c < text.length(); c++){
+            try{
+                if(text.charAt(c) != '\"' && text.charAt(c) != ' '){
+                    returnStatus[0] = line;
+                    returnStatus[1] = commentConfirmed;
+                    return returnStatus;
+                } else if(text.charAt(c) == '\"' && text.charAt(c+1) == '\"' && text.charAt(c+2) == '\"'){
+                        commentConfirmed = true;
+                        break;
+                } else {
+                    line += text.charAt(c);
+                }
+            } catch(Exception e){}
+        }
+        if(commentConfirmed){
+            String str = text.substring(c, text.length());
+            if(multiline){
+                line = line + str + " */";
+                commentConfirmed = false;
+            } else {
+                line = line + "/* " + str;
+            }
+            System.out.println(line);
+            returnStatus[0] = line;
+            returnStatus[1] = commentConfirmed;
+            return returnStatus;
+        }
+        returnStatus[0] = line;
+        returnStatus[1] = commentConfirmed;
+        return returnStatus;
+    }
 
     /*
      * Method: 'linePrint'
@@ -485,9 +540,16 @@ public class PythonToJavaConvert {
         return line;
     } // addLineEnding
 
+    /*
+     * Method: 'addTabs'
+     * Arguments: None
+     * 
+     * Description: calculates the number of spaces needed fore each line based
+     * ont 'this.tabCounter'
+     */
     public String addTabs(){
         String tabs = "";
-        for(int t = 0; t < tabCounter * this.spacing; t++){
+        for(int t = 0; t < this.tabCounter * this.spacing; t++){
             tabs += " ";
         }
         return tabs;
@@ -577,6 +639,33 @@ public class PythonToJavaConvert {
             try{
                 singleQuote += FileUtility.calcSingleQuote(text, c);
                 doubleQuote += FileUtility.calcDoubleQuote(text, c);
+                try{
+                    /*
+                     * if a single quote has been found and it is an opening
+                     * quote, checks if the contents should be rewriten as a
+                     * string or not.
+                     */
+                    if(text.charAt(c) == '\'' && singleQuote % 2 == 1){
+                        /* normal char */
+                        if(text.charAt(c+2) == '\''){
+                        /* char containing escape characters */
+                        } else if(text.charAt(c+1) == '\\' && text.charAt(c+3) == '\''){
+                        /* string writen as a char */
+                        } else {
+                            String charToString = "";
+                            for(int ch = 0; ch < text.length(); ch++){
+                                if(text.charAt(ch) == '\'' && text.charAt(ch-1) != '\\'){
+                                    charToString += "\"";
+                                } else {
+                                    charToString += text.charAt(ch);
+                                }
+                            }
+                            line = charToString;
+                            break;
+                        }
+                    }
+                } catch(Exception e){}
+
                 /* if all single quotes and double quotes are acounted for */
                 if(singleQuote % 2 == 0 && doubleQuote % 2 == 0){
                     /* Not Statements */
@@ -651,6 +740,18 @@ public class PythonToJavaConvert {
         return line;
     } // cleanFile
 
+
+    /*
+     * Method: 'variableList'
+     * Arguments: 
+     * 
+     * Description: checks if a detected variable exists, if it does not, it will
+     * create an instance of 
+     */
+    public void variableList(){
+
+    } // variableList
+
     public void saveTextToFile(String text){
         try {
             PrintWriter printWrite = new PrintWriter(new FileWriter(this.location, true));
@@ -661,4 +762,39 @@ public class PythonToJavaConvert {
             System.out.println("ERROR: saveTextToFile failed");
         }
     } // saveTextToFile
+
+
+    /* Getters */
+    public String getFileName(){
+        return this.fileName;
+    }
+    public String getLocation(){
+        return this.location;
+    }
+    public int getTabCounter(){
+        return this.tabCounter;
+    }
+    public int getSpacing(){
+        return this.spacing;
+    }
+    public HashMap<String, Variable> getVariableMap(){
+        return this.variableMap;
+    }
+
+    /* Setters */
+    public void setFileName(String fileName){
+        this.fileName = fileName;
+    }
+    public void setLocation(String location){
+        this.location = location;
+    }
+    public void setTabCounter(int tab){
+        this.tabCounter = tab;
+    }
+    public void setSpacing(int spacing){
+        this.spacing = spacing;
+    }
+    public void addValueGetVariableMap(String variableName, Variable var){
+        this.variableMap.put(variableName, var);
+    }
 } // PythonToJavaConvert (Class)

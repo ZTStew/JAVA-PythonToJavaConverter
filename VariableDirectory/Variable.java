@@ -22,31 +22,14 @@ public class Variable {
     /* 'varName' records the name of the variable found in the .py file */
     private String varName;
     /* 'varValue' tracks the current value of the variable found in the .py file */
-    // private Object varValue;
+    private Object varValue;
     /* 'varType' records the type of variable being handled. */
-    // private String varType;
+    private String varType;
     /* 'lineNumber' records the lines where the variable is found in the .java file */
     private int[] lineNumber;
 
 
     public Variable(){
-
-    }
-
-    /* Getters */
-
-    public String getVarName(){
-        return this.varName;
-    }
-    public int[] getLineNumber(){
-        return lineNumber;
-    }
-
-    /* Setters */
-    public void setVarName(String var){
-        this.varName = var;
-    }
-    public void addLineNumber(int val){
 
     }
 }

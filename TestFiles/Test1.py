@@ -8,8 +8,10 @@ This is a test file for testing the functionality of PythonToJavaConvert.java
 which takes any Python and converts it into functioning Java code.
 """
 
+x = 3 + y
+
 # Generic print statement
-print("Line 1")
+print('Line 1')
 
 # Print statement using concatenation
 print("Line " + "2 " + " concatenation test (plus)") #
@@ -45,5 +47,5 @@ elif 3 < 5:
 else:
     print("3 == 5")
 
-if not(False):
-    print("not test")
+# if not(False):
+#     print("not test")

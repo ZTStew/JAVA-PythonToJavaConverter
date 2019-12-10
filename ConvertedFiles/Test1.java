@@ -1,5 +1,5 @@
 /* File Automaticly Generated */
-/* Time: 12/07/2019 00:54:34 */
+/* Time: 12/09/2019 21:52:47 */
 
 public class Test1 {
     public static void main(String[] args) {
@@ -7,6 +7,8 @@ public class Test1 {
         /* # print statements are tested and converted into java */
         
         /* # */
+        
+        
         
         
         
@@ -51,8 +53,7 @@ public class Test1 {
             System.out.println("3 == 5");
         }
         
-        if(!(false)){
-            System.out.println("not test");
-        }
+        /* # if not(False): */
+        /* #     print("not test") */
     }
 }

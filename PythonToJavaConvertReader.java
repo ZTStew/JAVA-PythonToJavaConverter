@@ -19,23 +19,90 @@ import java.util.HashMap;
  */
 public class PythonToJavaConvertReader {
     private String fileName = "";
+    private int spacing = 4;
     /* 
      * 'fileNames' tracks all the files that have been created in responce to the
      * converting of the specified file.
      */
     private HashMap<String, PythonToJavaConvert> fileNames = new HashMap<String, PythonToJavaConvert>();
-    /* 'tabCounter' tracks the spacing of each line in order to define scope */
-    private int tabCounter = 2;
+    /*
+     * Will be toggled to 'true' whenever a command that spans multiple lines is
+     * found in the Python file.
+     */
+    private boolean multiline = false;
 
     public PythonToJavaConvertReader(String fileName, String folder){
         this.fileName = fileName;
+        this.spacing = findFileSpacing(fileName);
+
         /*
          * Creates by default a file with the same name as the file that was provided
          * and creates an instance of 'PythonToJavaConvert' for the name.
          */
-        fileNames.put(this.fileName, new PythonToJavaConvert(fileName, folder, true));
+        this.fileNames.put(this.fileName, new PythonToJavaConvert(this.fileName, folder, this.spacing, true));
         // System.out.println(fileNames.get("fileName"));
-    }
+    } // PythonToJavaConvertReader(Constructor)
+
+    // Recursion Segment
+    /*
+     * Method: 'findFileSpacing'
+     * Arguments:
+     * String fileName - The name of the file being searched.
+     *
+     * Description: recursivly searches 'fileName' for the first instance of spacing
+     * with characters afterwards. When this happens, the number of spaces in the
+     * line will be returned and the returned value will be used as the standard
+     * spacing rule for all generated files.
+     */
+    public int findFileSpacing(String fileName){
+        try{
+            /* Creates a Scanner to look through the file */
+            File file = new File(fileName);
+            Scanner scan = new Scanner(file);
+            /* Ensures that the file is not empty */
+            if(scan.hasNextLine()){
+                /* Calls 'findFileSpacing(Scanner, String)' */
+                return findFileSpacing(scan, scan.nextLine());
+            }
+        } catch(Exception e){}
+        /* If the file is empty, the spacing rule defaults to 4 */
+        return 4;
+    } // findFileSpacing
+    public int findFileSpacing(Scanner scan, String line){
+        /* Checks if there is another line */
+        if(scan.hasNextLine()){
+            /* If the line is empty */
+            if(line.length() < 1){
+                return findFileSpacing(scan, scan.nextLine());
+            }
+            try {
+                /* If the first character in 'line' is a space */
+                if(line.charAt(0) == ' '){
+                    /* Loops through 'line' */
+                    for(int i = 0; i < line.length(); i++){
+                        /*
+                         * If a value other than space is found, it is the end of
+                         * the spacing block and the value of 'i' is the number of
+                         * spaces in each tab.
+                         */
+                        if(line.charAt(i) != ' '){
+                            return i;
+                        }
+                    }
+                }
+                /*
+                 * The first character in 'line' was something other than space
+                 * and cannot be read for spacing information.
+                 */
+                return findFileSpacing(scan, scan.nextLine());
+            } catch(Exception e){
+                return 4;
+            }
+        } else {
+            return 4;
+        }
+    } // findFileSpacing
+
 
     /*
      * Method: 'readPythonFileContents'
@@ -43,9 +110,6 @@ public class PythonToJavaConvertReader {
      *
      * Description: Loops through the given file and sends off each line to
      * be converted.
-     *
-     * TODO: Each line needs to be counted for tabs and tracked so that brackets
-     * can be placed
      */
     public void readPythonFileContents(){
         String currentLine = null;
@@ -105,7 +169,13 @@ public class PythonToJavaConvertReader {
             /* Sets returned values to appropriate matching values */
             text = returnString[0];
             comment = returnString[1];
-        }
+        /* Checks for muli-line commenting */
+        } 
+        // else if(text.contains("\"\"\"")){
+        //     Object[] returnStatus = fileNames.get(this.fileName).multiLine(text, multiline);
+        //     line += (String)returnStatus[0];
+        //     multiline = (boolean)returnStatus[1];
+        // }
 
         /*
          * Runs through the file and looks for key words in Python that do not exist
