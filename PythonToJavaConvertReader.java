@@ -1,3 +1,5 @@
+import variableDirectory.*;
+
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.FileWriter;
@@ -20,6 +22,7 @@ import java.util.HashMap;
 public class PythonToJavaConvertReader {
     private String fileName = "";
     private int spacing = 4;
+    private int line = 1;
     /* 
      * 'fileNames' tracks all the files that have been created in responce to the
      * converting of the specified file.
@@ -119,6 +122,7 @@ public class PythonToJavaConvertReader {
             while(scan.hasNextLine()){
                 currentLine = scan.nextLine();
                 readLine(currentLine);
+                this.line++;
                 // System.out.println(currentLine);
             }
             fileNames.get(this.fileName).closeFile();
@@ -177,19 +181,29 @@ public class PythonToJavaConvertReader {
         //     multiline = (boolean)returnStatus[1];
         // }
 
+        /* Variable Handling */
+        // if(text.contains("=")){
+        //     fileNames.get(this.fileName).findVariable(text);
+        // }
+
         /*
          * Runs through the file and looks for key words in Python that do not exist
          * in Java and converts them preemptively.
          */
         text = fileNames.get(this.fileName).cleanFile(text);
 
+        // if(text.contains("elif")){
+        //     text = fileNames.get(this.fileName).elifStatement(text);
+        // }
+
         /*
          * checks with the current scope of the file to find out if lines need
          * to have their scope reduced.
          */
-        if(fileNames.get(this.fileName).checkScope(text)){
-            return false;
-        }
+        fileNames.get(this.fileName).checkScope(text);
+        // if(fileNames.get(this.fileName).checkScope(text)){
+        //     return false;
+        // }
 
         /* 
          * Adds proper indentation to each line.
@@ -201,11 +215,7 @@ public class PythonToJavaConvertReader {
 
         /* Containing Key Words */
 
-        /* Checks for 'elif' statements and for ':' which all elif statements have. */
-        // if(text.contains("elif") && text.contains(":")){
-        //     line = fileNames.get(this.fileName).elifStatement(text);
-        // /* Checks for 'if' statements and for ':' which all if statements have. */
-        // } else 
+        /* Checks for 'if' statements and for ':' which all if statements have. */
         if(text.contains("if") && text.contains(":")){
             line = fileNames.get(this.fileName).ifStatement(text);
         } 
@@ -247,4 +257,19 @@ public class PythonToJavaConvertReader {
     public String addSpacing(String tabs, String line, String comment){
         return tabs + line + comment;
     } // addSpacing
+
+    /*
+     * Method: 'returnMainFile'
+     * Arguments: NONE
+     * 
+     * Description: returns the name of the folder being saved to and the name of
+     * the file that has been saved.
+     */
+
+    public String[] returnMainFile(){
+        String[] returnStatement = new String[2];
+        returnStatement[0] = fileNames.get(this.fileName).getFolderName();
+        returnStatement[1] = fileNames.get(this.fileName).getFileName();
+        return returnStatement;
+    } // returnMainFile
 } // PythonToJavaConvertReader

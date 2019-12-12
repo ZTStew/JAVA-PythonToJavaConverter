@@ -1,4 +1,5 @@
 import utilityPackage.FileUtility;
+import variableDirectory.*;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -6,6 +7,7 @@ import java.io.FileWriter;
 import java.util.Scanner;
 
 import java.util.HashMap;
+import java.util.Arrays;
 
 /* Date Imports */
 import java.text.SimpleDateFormat;
@@ -19,20 +21,28 @@ import java.util.Date;
  * Description - takes each line and converts it based on predefined logic.
  */
 public class PythonToJavaConvert {
-    private String fileName = null;
-    private String location = null;
+    private String fileName;
+    private String location;
+    private String folder;
     /* 'tabCounter' tracks the spacing of each line in order to define scope */
     private int tabCounter = 2;
     private int spacing = 4;
 
     private HashMap<String, Variable> variableMap = new HashMap<String, Variable>();
-
+    private HashMap<String, VariableString> variableMapString = new HashMap<String, VariableString>();
+    private HashMap<String, VariableFloat> variableMapFloat = new HashMap<String, VariableFloat>();
+    private HashMap<String, VariableInteger> variableMapInteger = new HashMap<String, VariableInteger>();
+    private HashMap<String, VariableBoolean> variableMapBoolean = new HashMap<String, VariableBoolean>();
+    private HashMap<String, Integer>blackList = new HashMap<String, Integer>();
+    // private HashMap<String, Integer>blackList = new HashMap<String, Integer>();
+    // blackList.containsKey
     /*
      * Constructor: when 'PythonToJavaConvert' is instanciated, a file
      * with the same name as the given file will automaticly be created so that
      * it can be writen to as each line is compiled
      */
     public PythonToJavaConvert(String fileName, String folder, int spacing, boolean generate){
+        this.folder = folder;
         this.spacing = spacing;
         /* 
          * assigns 'this.fileName' to the return of 'removeExtention' which removes
@@ -76,6 +86,8 @@ public class PythonToJavaConvert {
         } catch(Exception e) {
             System.out.println("ERROR: " + e);
         }
+
+        this.buildBlackList();
     } // PythonToJavaConvert (Constructor)
 
 
@@ -247,7 +259,6 @@ public class PythonToJavaConvert {
      * print() default
      * print() with concatenation using a plus, '+'
      * print() with concatenation using a comma, ','
-     * print() with a variable definition contained.                            X
      * print() with variable casting - Should be addressed in different check   X
      * print() inside of a string. 
      */
@@ -610,6 +621,7 @@ public class PythonToJavaConvert {
              */
             if(text.contains("elif") && text.contains(":")){
                 this.saveTextToFile(this.addTabs() + "} " + this.elifStatement(text));
+                this.tabCounter++;
                 return true;
             } else if(text.contains("else") && text.contains(":")){
                 this.saveTextToFile(this.addTabs() + "} " + this.elseStatement(text));
@@ -668,6 +680,7 @@ public class PythonToJavaConvert {
 
                 /* if all single quotes and double quotes are acounted for */
                 if(singleQuote % 2 == 0 && doubleQuote % 2 == 0){
+
                     /* Not Statements */
                     if(text.charAt(c) == 'n' && text.charAt(c+1) == 'o' && text.charAt(c+2) == 't'){
                         line += "!";
@@ -741,6 +754,188 @@ public class PythonToJavaConvert {
     } // cleanFile
 
 
+    /* ---------------------------------------------------------------------- */
+    /* Section All Methods For Working With Variables In Python */
+    /* ---------------------------------------------------------------------- */
+
+    /*
+     * Method: 'buildBlackList'
+     * Arguments: NONE
+     * 
+     * Description: Adds Keys to 'blackList' for all reserved values 
+     */
+    private void buildBlackList(){
+        blackList.put("print", 0);blackList.put("if", 0);blackList.put("elif", 0);
+        blackList.put("else", 0);blackList.put("for", 0);blackList.put("\\", 0);
+        blackList.put("(", 0);blackList.put(")", 0);blackList.put(" ", 0);
+        blackList.put(":", 0);blackList.put(";", 0);blackList.put("-", 0);
+        blackList.put("+", 0);blackList.put("/", 0);blackList.put("*", 0);
+        blackList.put("&", 0);blackList.put("#", 0);blackList.put("@", 0);
+        blackList.put("!", 0);blackList.put("%", 0);blackList.put("^", 0);
+        blackList.put("<", 0);blackList.put(">", 0);blackList.put("?", 0);
+        blackList.put("0", 0);blackList.put("1", 0);blackList.put("2", 0);
+        blackList.put("3", 0);blackList.put("4", 0);blackList.put("5", 0);
+        blackList.put("6", 0);blackList.put("7", 0);blackList.put("8", 0);
+        blackList.put("9", 0);blackList.put("=", 0);
+    } // buildBlackList
+
+    /*
+     * Method: 'findVariable'
+     * Arguments: 
+     * String text - line being searched for variables
+     * 
+     * Description: Looks through 'text' and confirms if there are any variables 
+     * found in 'text'.
+     *
+     * Cases:
+     * 1) variable must have a single '=' after the variable
+     * 2) variable can come at any time
+     * 3) variable must not contain a black listed character
+     * 4) 
+     */
+    public void findVariable(String text){
+        int singleQuote = 0;
+        int doubleQuote = 0;
+
+        String textQuotesRemoved = "";
+        String line = "";
+        String assignment = "";
+        String variablePossible = "";
+        boolean equalsFound = false;
+
+        String blackListCheck = "";
+
+        /* removes spacing from start of line */
+        for(int c = 0; c < text.length(); c++){
+            if(text.charAt(c) == ' '){
+
+            } else {
+                for(int ch = c; ch < text.length(); ch++){
+                    line += text.charAt(ch);
+                }
+                break;
+            }
+        } 
+        text = line;
+        line = "";
+
+        for(int c = 0; c < text.length(); c++){
+            try{
+                singleQuote += FileUtility.calcSingleQuote(text, c);
+                doubleQuote += FileUtility.calcDoubleQuote(text, c);
+
+                if(singleQuote % 2 == 0 && doubleQuote % 2 == 0){
+                    textQuotesRemoved += text.charAt(c);
+                }
+            } catch(Exception e){}
+        }
+
+        /* Splits up 'text' removing all spacing and non alphabetical characters */
+        String[] textArr = textQuotesRemoved.split("\\P{Alpha}+");
+        String[] textSpace = text.split("\\s+");
+
+        /* Loops through 'textArr' and decides if the current index is in the blacklist */
+        for(int c = 0; c < textArr.length; c++){
+            /* Checks index if in blacklist */
+            if(blackList.containsKey(textArr[c])){
+                // System.out.println("Black List Value Found!!! " + textArr[c]);
+                textArr[c] = null;
+            /* Not in blacklist */
+            } else {
+                /* Loops through 'text' */
+                for(int ch = 0; ch < text.length(); ch++){
+                    /* Loops ahead to find if 'ch' is on the start of the variable */
+                    for(int chr = ch; chr < text.length(); chr++){
+                        line += text.charAt(chr);
+                        /* If the variable looked at is the same as the current variable */
+                        if(line.equals(textArr[c])){
+                            // System.out.println("Var Found: " + line + " | " + textArr[c]);
+                            try {
+                                /* Loops through the rest of 'text' to find an equals */
+                                for(int cha = chr+1; cha < text.length(); cha++){
+                                    // System.out.println(text.charAt(cha));
+                                    /* Checks for asignment opportator */
+                                    if(text.charAt(cha) == '='){
+                                        if(text.charAt(cha-1) == '+' || text.charAt(cha-1) == '-' || text.charAt(cha-1) == '*' || text.charAt(cha-1) == '/' || text.charAt(cha-1) == '%' || text.charAt(cha-1) == '&' || text.charAt(cha-1) == '|' || text.charAt(cha-1) == '^' || text.charAt(cha-1) == '<' || text.charAt(cha-1) == '>' || text.charAt(cha-1) == '!'){
+                                            equalsFound = false;
+                                            System.out.println("Illegal Opperator!");
+                                        } else {
+                                            /* Loops after '=' and adds contents to 'assignment' */
+                                            for(int chara = cha+1; chara < text.length(); chara++){
+                                                assignment += text.charAt(chara);
+                                            } 
+                                            equalsFound = true;
+
+                                            /*
+                                             * A variable has been found and the value
+                                             * has been issolated.
+                                             */
+                                            for(int chara = cha+1; chara < text.length(); chara++){
+                                                /* String */
+                                                if(text.charAt(chara) == '\"'){
+                                                    /* If variable exists in 'variableMap' already, gets variable and assigns new value */
+                                                    if(this.variableMapString.containsKey(textArr[c])){
+                                                        System.out.println(this.variableMapString.get(textArr[c]));
+                                                    } else {
+                                                        /* Adds variable to map and gives it value */
+                                                        this.variableMapString.put(textArr[c], new VariableString(textArr[c], 0, assignment));
+                                                    }
+                                                    break;
+                                                /* Float */
+                                                } else if(text.charAt(chara) == '.'){
+                                                    if(this.variableMapFloat.containsKey(textArr[c])){
+                                                        System.out.println(this.variableMapFloat.get(textArr[c]));
+                                                    } else {
+                                                        /* Adds variable to map and gives it value */
+                                                        this.variableMapFloat.put(textArr[c], new VariableFloat(textArr[c], 0, assignment));
+                                                    }
+                                                    break;
+                                                /* Boolean */
+                                                } else if(text.contains("true") || text.contains("True") || text.contains("false") || text.contains("False")) {
+                                                    if(this.variableMapBoolean.containsKey(textArr[c])){
+                                                        System.out.println(this.variableMapBoolean.get(textArr[c]));
+                                                    } else {
+                                                        this.variableMapBoolean.put(textArr[c], new VariableBoolean(textArr[c], 0, assignment));
+                                                    }
+                                                    break;
+                                                /* Integer */
+                                                } else {
+                                                    if(variableMapInteger.containsKey(textArr[c])){
+                                                        System.out.println(variableMapInteger.get(textArr[c]).getVarName());
+                                                        break;
+                                                    } else {
+                                                        variableMapInteger.put(textArr[c], new VariableInteger(textArr[c], 0, assignment));
+                                                        break;
+                                                    }
+                                                }
+                                            }
+
+                                            break;
+                                        }
+                                    } else {
+                                        line = "";
+                                        assignment = "";
+                                        equalsFound = false;
+                                    }
+                                }
+                            } catch(Exception e){
+                                line = "";
+                            }
+                            // System.out.println("Assignment: " + assignment);
+                        } else {
+                            line = "";
+                        }
+                    } // for(chr)
+                    if(equalsFound){
+                        break;
+                    }
+                } // for(ch)
+            } // if/else
+        } // for
+        // return line;
+    } // findVariable
+
+
     /*
      * Method: 'variableList'
      * Arguments: 
@@ -748,9 +943,10 @@ public class PythonToJavaConvert {
      * Description: checks if a detected variable exists, if it does not, it will
      * create an instance of 
      */
-    public void variableList(){
+    public void variableList(String variablePossible){
 
     } // variableList
+
 
     public void saveTextToFile(String text){
         try {
@@ -765,6 +961,9 @@ public class PythonToJavaConvert {
 
 
     /* Getters */
+    public String getFolderName(){
+        return this.folder;
+    }
     public String getFileName(){
         return this.fileName;
     }

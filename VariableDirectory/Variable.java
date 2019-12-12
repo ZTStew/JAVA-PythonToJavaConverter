@@ -1,3 +1,6 @@
+package variableDirectory;
+
+import java.util.ArrayList;
 
 /*
  * Class: Variable
@@ -20,16 +23,31 @@
  */
 public class Variable {
     /* 'varName' records the name of the variable found in the .py file */
-    private String varName;
-    /* 'varValue' tracks the current value of the variable found in the .py file */
-    private Object varValue;
-    /* 'varType' records the type of variable being handled. */
-    private String varType;
+    private String varName = "Object ";
     /* 'lineNumber' records the lines where the variable is found in the .java file */
-    private int[] lineNumber;
+    private ArrayList<Integer> lineNumber = new ArrayList<Integer>();
 
 
-    public Variable(){
+    public Variable(String name, Integer line){
+        this.varName = name;
+        this.lineNumber.add(line);
+    }
+    public Variable(){}
 
+    /* Getters */
+
+    public String getVarName(){
+        return this.varName;
+    }
+    public ArrayList<Integer> getLineNumber(){
+        return lineNumber;
+    }
+
+    /* Setters */
+    public void setVarName(String var){
+        this.varName = var;
+    }
+    public void addLineNumber(int line){
+        this.lineNumber.add(line);
     }
 }

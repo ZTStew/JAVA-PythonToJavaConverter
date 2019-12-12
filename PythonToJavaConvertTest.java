@@ -38,6 +38,8 @@ import utilityPackage.HelpUtility;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.Scanner;
 import java.util.HashMap;
 
@@ -50,13 +52,6 @@ public class PythonToJavaConvertTest {
         Scanner scan = new Scanner(System.in);
 
         /* Deleter methods !!! Remove from final product !!! */
-
-        // File deleteFile = new File("TestFiles/Test1.py");
-        // if(deleteFile.delete()) { 
-        //     System.out.println("File deleted successfully"); 
-        // } else { 
-        //     System.out.println("Failed to delete the file"); 
-        // } 
 
         // File file1 = new File("PythonToJavaConvertTest.class");
         // File file2 = new File("PythonToJavaConvert.class");
@@ -95,7 +90,7 @@ public class PythonToJavaConvertTest {
                 System.out.println(returnStatus[1]);
             }
             fileLocate = (Boolean)returnStatus[0];
-        }
+        } // if
 
         /* 
          * If a file has still not been found or args is empty, program will prompt
@@ -123,18 +118,30 @@ public class PythonToJavaConvertTest {
              * return statement.
              */
             fileLocate = (Boolean)returnStatus[0];
-        }
+        } // while
+
+
+
+
+
 
         /* Section: Prompts user for folder that the file will be saved to. */
 
         String selectedFolder = "";
 
         boolean folderConfirmed = false; 
+        boolean once = true;
+
         while(!folderConfirmed){
-            /* Prompts user for folder to save files to */
-            System.out.println((char)27 + "[1;36m" + "\nEnter the folder you would like to save to." 
-                + " Ex: \"C/:Users/<UserName>/Desktop/Folder1/Folder2\":" + (char)27 + "[00m");
-            selectedFolder = scan.nextLine();
+            if(once && args.length > 1){
+                selectedFolder = args[1];
+                once = false;
+            } else {
+                /* Prompts user for folder to save files to */
+                System.out.println((char)27 + "[1;36m" + "\nEnter the folder you would like to save to." 
+                    + " Ex: \"C:/Users/<UserName>/Desktop/Folder1/Folder2\":" + (char)27 + "[00m");
+                selectedFolder = scan.nextLine();
+            }
 
             /* Checks if 'selectedFolder' is empty */
             if(selectedFolder.length() < 1) {
@@ -192,11 +199,11 @@ public class PythonToJavaConvertTest {
                  * and 'folderConfirmed' is set to true.
                  */
                 } else {
-                    System.out.println((String)returnStatus[1]);
+                    // System.out.println((String)returnStatus[1]);
                     folderConfirmed = true;
                 }
-            }
-        }
+            } // if/else
+        } // while
 
         System.out.println("\n# - - - - - # # - - - - - # # - - - - - #");
 
@@ -207,16 +214,68 @@ public class PythonToJavaConvertTest {
         PythonToJavaConvertReader fileToRead = new PythonToJavaConvertReader(fileName, selectedFolder);
         fileToRead.readPythonFileContents();
 
+
+
+
+
         /*
-         * Auto-Run method
-         * automaticlly runs the now converted file in the command line for the
-         * user to see if the file came out right.
-         Structure:
-         1) ask user if they would like to auto-run the file.
-         2) finds the now created file
-         3) compiles the file with the main method
-         4) executes the now compiled file.
+         * Checks with user to see if they want to automatically run the newly
+         * converted .java file.
          */
+
+        /*
+         * Asks user if they would like to automatically compile and run the newly
+         * generated .java file.
+         */
+        String autorun = "";
+        String[] fileStructure = fileToRead.returnMainFile();
+
+        /*
+         * If there is a third argument in 'args' then it automatically sets 'autorun'
+         * to the value found.
+         */
+        if(args.length > 2){
+            autorun = args[2];
+        } else {
+            /*
+             * If 'args' does not have a third value, asks user directly if they
+             * want to autorun the generated file.
+             */
+            System.out.println((char)27 + "[1;36m" + "\nWould you like to automatically " + 
+                "compile and run this file? (Y/N)" + (char)27 + "[00m");
+            autorun = scan.nextLine();
+        }
+
+        if(autorun.contains("Y") || autorun.contains("y") || autorun.contains("Yes") || autorun.contains("yes") || autorun.contains("true") || autorun.contains("True")){
+            System.out.println("");
+            try {
+                /*
+                 * Sets 'command' to be a naviagtion command to the folder selected
+                 * by the user previously. Next, it compiles the .java file. Then,
+                 * executes it automatically.
+                 */
+                String command = "cd \"" + fileStructure[0] + "\" && javac " + fileStructure[1] + ".java && java " + fileStructure[1] + "";
+                /* Feeds 'builder' the prebuilt commands stored in 'command' */
+                ProcessBuilder builder = new ProcessBuilder(
+                    "cmd.exe", "/c", command);
+                /* Orders execution to start */
+                Process process = builder.start();
+                /* Creates 'reader' to read the terminal outputs */
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                String line;
+                /*
+                 * Long as there a value being assigned to 'line' read the value
+                 * and print the value to the console.
+                 */
+                while (true) {
+                    line = reader.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    System.out.println(line);
+                }
+            } catch(Exception e){}
+        }
 
         scan.close();
     }

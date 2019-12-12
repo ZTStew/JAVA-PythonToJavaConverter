@@ -3,12 +3,26 @@
 
 #
 
+"""
+This is a test file for testing the functionality of PythonToJavaConvert.java
+which takes any Python and converts it into functioning Java code.
+"""
+zach = 3
+y=2
+# print(y)
+x = 3 + y
+x=y
+
+print(x == y)
+
 # Generic print statement
 print('Line 1')
 
 # Print statement using concatenation
-print("Line " + "2" + " concatenation test (plus)") #
+print("Line " + "2 " + " concatenation test (plus)") #
 
+# Print statement to test how the convertor treats casting statements
+# print("Line " + str(3) + "(casting)") ###
 print("Line 3") ###
 
 print("Line 4") # Tests comment reader for if it can detect comments after code.
@@ -25,6 +39,7 @@ print("Line 7: pr")
 # Print statement tests using commas for concatenation
 print("Line", "8")
 
+
 # Tests if statements
 if 3 > 5:
     print("3 > 5")
@@ -32,9 +47,10 @@ elif 3 < 5:
     print("3 < 5")
 else:
     print("3 == 5")
+    print("3==5")
 print(1 != 2)
 if(3 == 3):
-    print("3 == 3")
+    print("3 = 3")
 
 if not(False):
     print("not test")

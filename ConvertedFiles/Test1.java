@@ -1,5 +1,5 @@
 /* File Automaticly Generated */
-/* Time: 12/09/2019 21:52:47 */
+/* Time: 12/12/2019 14:31:25 */
 
 public class Test1 {
     public static void main(String[] args) {
@@ -8,21 +8,12 @@ public class Test1 {
         
         /* # */
         
-        
-        
-        
-        
-        
-        
-        
         /* # Generic print statement */
         System.out.println("Line 1");
         
         /* # Print statement using concatenation */
-        System.out.println("Line " + "2 " + " concatenation test (plus)");/* # */
+        System.out.println("Line " + "2" + " concatenation test (plus)");/* # */
         
-        /* # Print statement to test how the convertor treats casting statements */
-        /* # print("Line " + str(3) + "(casting)") ### */
         System.out.println("Line 3");/* ### */
         
         System.out.println("Line 4");/* # Tests comment reader for if it can detect comments after code. */
@@ -39,21 +30,27 @@ public class Test1 {
         /* # Print statement tests using commas for concatenation */
         System.out.println("Line" + " " +  "8");
         
-        /* ################################################################################ */
-        
-        System.out.println("Expected Output: \nLine 1\nLine 2 concatenation test (plus)\nLine 3\nLine 4");
-        System.out.println("Line #5\nLine 6: print\nLine 7: pr\nLine 8");   /* # */
-        
         /* # Tests if statements */
         if(3 > 5){
             System.out.println("3 > 5");
         } else if(3 < 5){
+                
             System.out.println("3 < 5");
         } else {
+            
             System.out.println("3 == 5");
         }
+        System.out.println(1 != 2);
         
-        /* # if not(False): */
-        /* #     print("not test") */
+        System.out.println("3 == 3");
+        
+        if(!(false)){
+            System.out.println("not test");
+        }
+        
+        /* ################################################################################ */
+        
+        System.out.println("\nExpected Output: \nLine 1\nLine 2 concatenation test (plus)\nLine 3\nLine 4");
+        System.out.println("Line #5\nLine 6: print\nLine 7: pr\nLine 8\n3 < 5\ntrue\n3 = 3\nnot test");   /* # */
     }
 }
