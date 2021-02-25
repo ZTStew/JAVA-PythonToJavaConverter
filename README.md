@@ -3,7 +3,7 @@ over to Java (.java) in a way that allows it to compile and run without
 any errors.
 
 Current Status: 
-Program is able to take in a user specified Pythong file and confirm it, if the
+Program is able to take in a user specified Python file and confirm it, if the
 file does not exist, the user is repromted for the Python file.
 
 User is then asked for the folder they would like to save the soon to be converted
