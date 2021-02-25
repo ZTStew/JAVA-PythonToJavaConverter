@@ -29,10 +29,6 @@ public class PythonToJavaConvert {
     private int spacing = 4;
 
     private HashMap<String, Variable> variableMap = new HashMap<String, Variable>();
-    private HashMap<String, VariableString> variableMapString = new HashMap<String, VariableString>();
-    private HashMap<String, VariableFloat> variableMapFloat = new HashMap<String, VariableFloat>();
-    private HashMap<String, VariableInteger> variableMapInteger = new HashMap<String, VariableInteger>();
-    private HashMap<String, VariableBoolean> variableMapBoolean = new HashMap<String, VariableBoolean>();
     private HashMap<String, Integer>blackList = new HashMap<String, Integer>();
     // private HashMap<String, Integer>blackList = new HashMap<String, Integer>();
     // blackList.containsKey
@@ -58,7 +54,7 @@ public class PythonToJavaConvert {
 
         if(folder.charAt(folder.length()-1) != '\\' || folder.charAt(folder.length()-1) != '/'){
             folder += "/";
-        }
+        } // if
 
         this.location = folder + this.fileName + ".java";
 
@@ -85,7 +81,7 @@ public class PythonToJavaConvert {
             generateFileStart(generate);
         } catch(Exception e) {
             System.out.println("ERROR: " + e);
-        }
+        } // try/catch
 
         this.buildBlackList();
     } // PythonToJavaConvert (Constructor)
@@ -102,7 +98,7 @@ public class PythonToJavaConvert {
      */
     public void generateFileStart(){
         this.generateFileStart(false);
-    } 
+    } // generateFileStart
     public void generateFileStart(boolean main){
         try {
             PrintWriter printWrite = new PrintWriter(new FileWriter(this.location, true));
@@ -118,13 +114,13 @@ public class PythonToJavaConvert {
             } else {
                 /* If main is set to false, an empty constructor is generated instead */
                 printWrite.println("public " + this.fileName + "{}");
-            }
+            } // if/else
 
             printWrite.close();
         } catch(Exception e) {
             System.out.println("ERROR: generateFileStart - " + e);
-        }
-    }
+        } // try/catch
+    } // generateFileStart
 
     /*
      * Method: 'lineComment'
@@ -172,18 +168,18 @@ public class PythonToJavaConvert {
                      */
                     for(int ch = c; ch < text.length(); ch++){
                         comment += text.charAt(ch);
-                    }
+                    } // for
                     /* Adds Java comment notation to line */
                     comment = "/* " + comment + " */";
                     break;
                 /* If above check fails, the '#' is in a quote and is added to 'line' */
                 } else {
                     line += text.charAt(c);
-                }
+                } // if/else
             } else {
                 /* If the current character is not a '#', add character to 'line' */
                 line += text.charAt(c);
-            }
+            } // if/else
         } // for
 
         /* Resets 'text' to be everything not included in 'comment' */
@@ -225,9 +221,9 @@ public class PythonToJavaConvert {
                         break;
                 } else {
                     line += text.charAt(c);
-                }
-            } catch(Exception e){}
-        }
+                } // if / else if / else
+            } catch(Exception e) {} // try/catch
+        } // for
         if(commentConfirmed){
             String str = text.substring(c, text.length());
             if(multiline){
@@ -235,12 +231,12 @@ public class PythonToJavaConvert {
                 commentConfirmed = false;
             } else {
                 line = line + "/* " + str;
-            }
+            } // if / else
             System.out.println(line);
             returnStatus[0] = line;
             returnStatus[1] = commentConfirmed;
             return returnStatus;
-        }
+        } // if
         returnStatus[0] = line;
         returnStatus[1] = commentConfirmed;
         return returnStatus;
@@ -293,8 +289,8 @@ public class PythonToJavaConvert {
                                      */
                                     if(text.charAt(ch) == '\'' && text.charAt(c - 1) == '\\'){
                                         singleQuote--;
-                                    }
-                                } catch(Exception e){}
+                                    } // if
+                                } catch(Exception e){} // try/catch
                                 try {
                                     /*
                                      * Removes count from 'doubleQuote' if it is
@@ -303,9 +299,9 @@ public class PythonToJavaConvert {
 
                                     if(text.charAt(ch) == '\"' && text.charAt(c - 1) == '\\'){
                                         doubleQuote--;
-                                    }
-                                } catch(Exception e){}
-                            }
+                                    } // if
+                                } catch(Exception e){} // try/catch
+                            } // if/else if/ else
 
                             /*
                              * If there is a ')' not inside of quotes, the 
@@ -322,15 +318,15 @@ public class PythonToJavaConvert {
                                     line += " + \" \" + ";
                                 } else {
                                     line += text.charAt(ch);
-                                }
-                            }
+                                } // if/else
+                            } // if/else
                         } // for
                         line = "System.out.println(" + line;
                     } // if
                 } catch(ArrayIndexOutOfBoundsException e) {
                     System.out.println("ERROR: Out Of Bounds: print()");
                     break;
-                }
+                } // try/catch
             } // if
         } // for
         return line;
@@ -378,9 +374,9 @@ public class PythonToJavaConvert {
                     } else if(text.charAt(c) == 'i' && text.charAt(c+1) == 'f' && text.charAt(c+2) == ' '){
                         isIf = true;
                         break;
-                    }
-                } catch(Exception e){}
-            }
+                    } // if/else if
+                } catch(Exception e){} // try/catch
+            } // if
         } // for
         if(isIf){
             tabCounter++;
@@ -396,7 +392,7 @@ public class PythonToJavaConvert {
                         line += "){";
                         ch++;
                         break;
-                    }
+                    } // if
                 } // if
                 line += text.charAt(ch);
             } // for
@@ -438,9 +434,9 @@ public class PythonToJavaConvert {
                     if(text.charAt(c) == 'e' && text.charAt(c+1) == 'l' && text.charAt(c+2) == 'i' && text.charAt(c+3) == 'f' && text.charAt(c+4) == ' '){
                         isElIf = true;
                         break;
-                    }
-                } catch(Exception e){}
-            }
+                    } // if
+                } catch(Exception e){} // try/catch
+            } // if
         } // for
         if(isElIf){
             // tabCounter++;
@@ -459,8 +455,8 @@ public class PythonToJavaConvert {
                             line += "){";
                             tabCounter++;
                             break;
-                        }
-                    }
+                        } // if
+                    } // if
                     line += text.charAt(ch);
                 } // for
             } catch(Exception e){}
@@ -493,11 +489,11 @@ public class PythonToJavaConvert {
                 if(text.charAt(c) == 'e' && text.charAt(c+1) == 'l' && text.charAt(c+2) == 's' && text.charAt(c+3) == 'e' && text.charAt(4) == ':'){
                     tabCounter++;
                     return "else {";
-                }
+                } // if
             } catch(Exception e){
                 return text;
-            }
-        }
+            } // try/catch
+        } // for
 
         return text;
     } // elseStatement
@@ -540,14 +536,14 @@ public class PythonToJavaConvert {
                             line = s1 + ";" + s2;
                         } catch(Exception e) {
                             line += ";";
-                        }
-                    }
+                        } // try/catch
+                    } // if/else
                     break;
-                }
-            }
+                } // if/else if
+            } // for
         } catch(Exception e) {
             System.out.println("ERROR: ';' - " + e);
-        }
+        } // try/catch
         return line;
     } // addLineEnding
 
@@ -562,7 +558,7 @@ public class PythonToJavaConvert {
         String tabs = "";
         for(int t = 0; t < this.tabCounter * this.spacing; t++){
             tabs += " ";
-        }
+        } // for
         return tabs;
     } // addTabs
 
@@ -583,10 +579,10 @@ public class PythonToJavaConvert {
             /* Adds spaces before '}' */
             for(int t = 1; t <= (this.tabCounter-1) * 4; t++){
                 tabs += " ";
-            }
+            } // for
             this.tabCounter--;
             this.saveTextToFile(tabs + "}");
-        }
+        } // for
     } // closeFile
 
     /*
@@ -605,8 +601,8 @@ public class PythonToJavaConvert {
                 spaces++;
             } else {
                 break;
-            }
-        }
+            } // if/else
+        } // for
         /*
          * If the number of spaces divided by 'this.spacing' is greater than
          * 'this.tabCounter' - 2 (-2 acounts for the class declaration and the  
@@ -628,8 +624,8 @@ public class PythonToJavaConvert {
                 return true;
             } else {
                 this.saveTextToFile(this.addTabs() + "}");
-            }
-        }
+            } // if/else if/else
+        } // if
         return false;
     } // checkScope
 
@@ -670,13 +666,13 @@ public class PythonToJavaConvert {
                                     charToString += "\"";
                                 } else {
                                     charToString += text.charAt(ch);
-                                }
-                            }
+                                } // if/else
+                            } // for
                             line = charToString;
                             break;
-                        }
-                    }
-                } catch(Exception e){}
+                        } // if/else if/else
+                    } // if
+                } catch(Exception e){} // try/catch
 
                 /* if all single quotes and double quotes are acounted for */
                 if(singleQuote % 2 == 0 && doubleQuote % 2 == 0){
@@ -711,16 +707,16 @@ public class PythonToJavaConvert {
                                 break;
                             } else {
                                 line += text.charAt(c);
-                            }
-                        }
+                            } // if/else
+                        } // for
                     /* Casting: Integer */
                     } else if(text.charAt(c) == 'i' && text.charAt(c+1) == 'n' && text.charAt(c+2) == 't' && text.charAt(c+3) == '('){
                         boolean convert = true;
                         try{
                             if(text.charAt(c-2) == 'p' && text.charAt(c-1) == 'r'){
                                 convert = false;
-                            }
-                        } catch(Exception e){}
+                            } // if
+                        } catch(Exception e){} // try/catch
                         if(convert){
                             line += "(Integer)";
                             c += 4;
@@ -730,9 +726,9 @@ public class PythonToJavaConvert {
                                     break;
                                 } else {
                                     line += text.charAt(c);
-                                }
-                            }
-                        }
+                                } // if/else
+                            } // for
+                        } // if
                     /* Casting: Float */
                     } else if(text.charAt(c) == 'f' && text.charAt(c+1) == 'l' && text.charAt(c+2) == 'o' && text.charAt(c+3) == 'a' && text.charAt(c+3) == 't' && text.charAt(c+3) == '('){
                         line += "(Double)";
@@ -743,11 +739,11 @@ public class PythonToJavaConvert {
                                 break;
                             } else {
                                 line += text.charAt(c);
-                            }
-                        }
-                    }
-                }
-            }catch(Exception e){}
+                            } // if/else
+                        } // for
+                    } // if/else if
+                } // if
+            }catch(Exception e){} // try/catch
             line += text.charAt(c);
         } // for
         return line;
@@ -812,10 +808,10 @@ public class PythonToJavaConvert {
             } else {
                 for(int ch = c; ch < text.length(); ch++){
                     line += text.charAt(ch);
-                }
+                } // for
                 break;
-            }
-        } 
+            } // if/else
+        } // for
         text = line;
         line = "";
 
@@ -826,9 +822,9 @@ public class PythonToJavaConvert {
 
                 if(singleQuote % 2 == 0 && doubleQuote % 2 == 0){
                     textQuotesRemoved += text.charAt(c);
-                }
-            } catch(Exception e){}
-        }
+                } // if
+            } catch(Exception e){} // try/catch
+        } // for
 
         /* Splits up 'text' removing all spacing and non alphabetical characters */
         String[] textArr = textQuotesRemoved.split("\\P{Alpha}+");
@@ -863,7 +859,7 @@ public class PythonToJavaConvert {
                                             /* Loops after '=' and adds contents to 'assignment' */
                                             for(int chara = cha+1; chara < text.length(); chara++){
                                                 assignment += text.charAt(chara);
-                                            } 
+                                            } // for
                                             equalsFound = true;
 
                                             /*
@@ -874,57 +870,56 @@ public class PythonToJavaConvert {
                                                 /* String */
                                                 if(text.charAt(chara) == '\"'){
                                                     /* If variable exists in 'variableMap' already, gets variable and assigns new value */
-                                                    if(this.variableMapString.containsKey(textArr[c])){
-                                                        System.out.println(this.variableMapString.get(textArr[c]));
+                                                    if(this.variableMap.containsKey(textArr[c])){
+                                                        System.out.println(this.variableMap.get(textArr[c]));
                                                     } else {
                                                         /* Adds variable to map and gives it value */
-                                                        this.variableMapString.put(textArr[c], new VariableString(textArr[c], 0, assignment));
-                                                    }
+                                                        this.variableMap.put(textArr[c], new VariableString(textArr[c], 0, assignment));
+                                                    } // if/else
                                                     break;
                                                 /* Float */
                                                 } else if(text.charAt(chara) == '.'){
-                                                    if(this.variableMapFloat.containsKey(textArr[c])){
-                                                        System.out.println(this.variableMapFloat.get(textArr[c]));
+                                                    if(this.variableMap.containsKey(textArr[c])){
+                                                        System.out.println(this.variableMap.get(textArr[c]));
                                                     } else {
                                                         /* Adds variable to map and gives it value */
-                                                        this.variableMapFloat.put(textArr[c], new VariableFloat(textArr[c], 0, assignment));
-                                                    }
+                                                        this.variableMap.put(textArr[c], new VariableFloat(textArr[c], 0, assignment));
+                                                    } // if/else
                                                     break;
                                                 /* Boolean */
                                                 } else if(text.contains("true") || text.contains("True") || text.contains("false") || text.contains("False")) {
-                                                    if(this.variableMapBoolean.containsKey(textArr[c])){
-                                                        System.out.println(this.variableMapBoolean.get(textArr[c]));
+                                                    if(this.variableMap.containsKey(textArr[c])){
+                                                        System.out.println(this.variableMap.get(textArr[c]));
                                                     } else {
-                                                        this.variableMapBoolean.put(textArr[c], new VariableBoolean(textArr[c], 0, assignment));
-                                                    }
+                                                        this.variableMap.put(textArr[c], new VariableBoolean(textArr[c], 0, assignment));
+                                                    } // if/else
                                                     break;
                                                 /* Integer */
                                                 } else {
-                                                    if(variableMapInteger.containsKey(textArr[c])){
-                                                        System.out.println(variableMapInteger.get(textArr[c]).getVarName());
+                                                    if(variableMap.containsKey(textArr[c])){
+                                                        System.out.println(variableMap.get(textArr[c]).getVarName());
                                                         break;
                                                     } else {
-                                                        variableMapInteger.put(textArr[c], new VariableInteger(textArr[c], 0, assignment));
+                                                        variableMap.put(textArr[c], new VariableInteger(textArr[c], 0, assignment));
                                                         break;
-                                                    }
-                                                }
-                                            }
-
+                                                    } // if/else
+                                                } // if/else if/else
+                                            } // for
                                             break;
-                                        }
+                                        } // if/else
                                     } else {
                                         line = "";
                                         assignment = "";
                                         equalsFound = false;
-                                    }
-                                }
+                                    } // if/else
+                                } // for
                             } catch(Exception e){
                                 line = "";
-                            }
+                            } // try/catch
                             // System.out.println("Assignment: " + assignment);
                         } else {
                             line = "";
-                        }
+                        } // if/else
                     } // for(chr)
                     if(equalsFound){
                         break;
@@ -956,7 +951,7 @@ public class PythonToJavaConvert {
             printWrite.close();
         } catch(Exception e) {
             System.out.println("ERROR: saveTextToFile failed");
-        }
+        } // try/catch
     } // saveTextToFile
 
 

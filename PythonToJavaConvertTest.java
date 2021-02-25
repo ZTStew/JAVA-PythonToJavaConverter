@@ -88,7 +88,7 @@ public class PythonToJavaConvertTest {
             if(!(Boolean)returnStatus[0]){
                 /* Prints out the error for the user. */
                 System.out.println(returnStatus[1]);
-            }
+            } // if
             fileLocate = (Boolean)returnStatus[0];
         } // if
 
@@ -112,18 +112,13 @@ public class PythonToJavaConvertTest {
             if(!(Boolean)returnStatus[0]){
                 /* Prints out the error for the user. */
                 System.out.println(returnStatus[1]);
-            }
+            } // if
             /*
              * sets the value of 'fileLocate' to the value of the boolean in the
              * return statement.
              */
             fileLocate = (Boolean)returnStatus[0];
         } // while
-
-
-
-
-
 
         /* Section: Prompts user for folder that the file will be saved to. */
 
@@ -214,10 +209,6 @@ public class PythonToJavaConvertTest {
         PythonToJavaConvertReader fileToRead = new PythonToJavaConvertReader(fileName, selectedFolder);
         fileToRead.readPythonFileContents();
 
-
-
-
-
         /*
          * Checks with user to see if they want to automatically run the newly
          * converted .java file.
@@ -244,7 +235,7 @@ public class PythonToJavaConvertTest {
             System.out.println((char)27 + "[1;36m" + "\nWould you like to automatically " + 
                 "compile and run this file? (Y/N)" + (char)27 + "[00m");
             autorun = scan.nextLine();
-        }
+        } // if/else
 
         if(autorun.contains("Y") || autorun.contains("y") || autorun.contains("Yes") || autorun.contains("yes") || autorun.contains("true") || autorun.contains("True")){
             System.out.println("");
@@ -273,10 +264,10 @@ public class PythonToJavaConvertTest {
                         break;
                     }
                     System.out.println(line);
-                }
-            } catch(Exception e){}
-        }
+                } // while
+            } catch(Exception e){} // try/catch
+        } // if
 
         scan.close();
-    }
-}
+    } // main
+} // PythonToJavaConvertTest

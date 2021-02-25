@@ -66,8 +66,8 @@ public class PythonToJavaConvertReader {
             if(scan.hasNextLine()){
                 /* Calls 'findFileSpacing(Scanner, String)' */
                 return findFileSpacing(scan, scan.nextLine());
-            }
-        } catch(Exception e){}
+            } // if
+        } catch(Exception e){} // try/catch
         /* If the file is empty, the spacing rule defaults to 4 */
         return 4;
     } // findFileSpacing
@@ -77,7 +77,7 @@ public class PythonToJavaConvertReader {
             /* If the line is empty */
             if(line.length() < 1){
                 return findFileSpacing(scan, scan.nextLine());
-            }
+            } // if
             try {
                 /* If the first character in 'line' is a space */
                 if(line.charAt(0) == ' '){
@@ -90,9 +90,9 @@ public class PythonToJavaConvertReader {
                          */
                         if(line.charAt(i) != ' '){
                             return i;
-                        }
-                    }
-                }
+                        } // if
+                    } // for
+                } // if
                 /*
                  * The first character in 'line' was something other than space
                  * and cannot be read for spacing information.
@@ -100,10 +100,10 @@ public class PythonToJavaConvertReader {
                 return findFileSpacing(scan, scan.nextLine());
             } catch(Exception e){
                 return 4;
-            }
+            } // try/catch
         } else {
             return 4;
-        }
+        } // else
     } // findFileSpacing
 
 
@@ -124,13 +124,13 @@ public class PythonToJavaConvertReader {
                 readLine(currentLine);
                 this.line++;
                 // System.out.println(currentLine);
-            }
+            } // while
             fileNames.get(this.fileName).closeFile();
             scan.close();
         } catch(Exception e){
             System.out.println("ERROR: readPythonFileContents - " + e.getMessage());
             System.out.println(currentLine);
-        }
+        } // try/catch
     } // readPythonFileContents
 
 
@@ -174,7 +174,7 @@ public class PythonToJavaConvertReader {
             text = returnString[0];
             comment = returnString[1];
         /* Checks for muli-line commenting */
-        } 
+        }  // if
         // else if(text.contains("\"\"\"")){
         //     Object[] returnStatus = fileNames.get(this.fileName).multiLine(text, multiline);
         //     line += (String)returnStatus[0];
@@ -182,9 +182,9 @@ public class PythonToJavaConvertReader {
         // }
 
         /* Variable Handling */
-        // if(text.contains("=")){
-        //     fileNames.get(this.fileName).findVariable(text);
-        // }
+        if(text.contains("=")){
+            fileNames.get(this.fileName).findVariable(text);
+        } // if
 
         /*
          * Runs through the file and looks for key words in Python that do not exist
@@ -218,14 +218,14 @@ public class PythonToJavaConvertReader {
         /* Checks for 'if' statements and for ':' which all if statements have. */
         if(text.contains("if") && text.contains(":")){
             line = fileNames.get(this.fileName).ifStatement(text);
-        } 
+        } // if
 
         /* Non-Containing Key Words */
 
         /* Checks if the line has a print statement in it or not. */
         if(text.contains("print(")){
             line = fileNames.get(this.fileName).linePrint(text);
-        }
+        } // if
 
 
         /* Adds a ';' to all lines that need one. */
